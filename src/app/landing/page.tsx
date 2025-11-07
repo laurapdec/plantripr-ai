@@ -32,6 +32,14 @@ export default function LandingPage() {
               Plantrip'r <span className="text-emerald-500">AI</span>
             </div>
           </div>
+
+          <nav className="hidden md:flex items-center gap-6">
+            <Link href="/about" className="text-gray-600 hover:text-gray-900">About</Link>
+            <Link href="/privacy" className="text-gray-600 hover:text-gray-900">Privacy</Link>
+            <Link href="#features" className="text-gray-600 hover:text-gray-900">Features</Link>
+            <Link href="#pricing" className="text-gray-600 hover:text-gray-900">Pricing</Link>
+          </nav>
+
           <div className="flex items-center gap-3">
             <Link href="/login">
               <Button variant="ghost">Sign In</Button>

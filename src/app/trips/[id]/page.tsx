@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import Image from "next/image";
+import QRCode from "qrcode";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   Airplay,
   Plane,
@@ -23,6 +25,7 @@ import {
   History,
   MapPin,
   Plus,
+  QrCode,
   Search,
   Settings,
   Share2,
@@ -75,6 +78,7 @@ type Trip = {
   expenses: Expense[];
   days: DayPlan[];
   isPublic: boolean;
+  tripCode: string;
 };
 
 const seedGuests: Guest[] = [
@@ -92,6 +96,7 @@ const demoTrip: Trip = {
   cover: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1500&auto=format&fit=crop",
   guests: seedGuests,
   isPublic: true,
+  tripCode: "ANS-2026-A7X9",
   expenses: [
     { id: "e1", label: "Cabin deposit", amount: 480, paidBy: "Laura", splitWith: ["Laura", "David", "Nina"], currency: "USD" as Currency },
     { id: "e2", label: "Groceries", amount: 126.5, paidBy: "David", splitWith: ["Laura", "David", "Nina"], currency: "USD" as Currency },
@@ -157,8 +162,31 @@ export default function TripDetailPage() {
   const [newGuest, setNewGuest] = useState({ name: "", email: "" });
   const [linkCopied, setLinkCopied] = useState(false);
   const [currentCurrency, setCurrentCurrency] = useState<Currency>("USD");
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
+  const [showQrCode, setShowQrCode] = useState(false);
 
   const split = useExpenseSplit(activeTrip.expenses, activeTrip.guests, currentCurrency);
+
+  // Generate QR code
+  useEffect(() => {
+    const generateQR = async () => {
+      try {
+        const tripUrl = `${window.location.origin}/trips/${activeTrip.id}?code=${activeTrip.tripCode}`;
+        const qrDataUrl = await QRCode.toDataURL(tripUrl, {
+          width: 200,
+          margin: 2,
+          color: {
+            dark: '#10b981', // emerald-500
+            light: '#ffffff'
+          }
+        });
+        setQrCodeUrl(qrDataUrl);
+      } catch (err) {
+        console.error('Error generating QR code:', err);
+      }
+    };
+    generateQR();
+  }, [activeTrip.id, activeTrip.tripCode]);
 
   function addAIPlan() {
     // Tiny mock of an "AI generated" plan from the prompt
@@ -189,11 +217,8 @@ export default function TripDetailPage() {
     setNewExpense({ label: "", amount: "", paidBy: newExpense.paidBy });
   }
 
-  function cycleCurrency() {
-    const currencies: Currency[] = ["USD", "EUR", "GBP", "JPY", "CAD", "AUD"];
-    const currentIndex = currencies.indexOf(currentCurrency);
-    const nextIndex = (currentIndex + 1) % currencies.length;
-    setCurrentCurrency(currencies[nextIndex]);
+  function handleCurrencyChange(newCurrency: Currency) {
+    setCurrentCurrency(newCurrency);
   }
 
   function addGuest() {
@@ -203,7 +228,7 @@ export default function TripDetailPage() {
     setNewGuest({ name: "", email: "" });
   }
 
-  const shareUrl = `https://plantripr.app/trip/${activeTrip.id}`;
+  const shareUrl = `https://plantripr.app/trip/${activeTrip.id}?code=${activeTrip.tripCode}`;
 
   return (
     <TooltipProvider>
@@ -365,6 +390,67 @@ export default function TripDetailPage() {
             </Card>
 
             <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2">
+                  <Share2 className="h-5 w-5"/>
+                  Share Trip
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-gray-700">Trip Code</span>
+                    <Badge variant="secondary" className="font-mono">{activeTrip.tripCode}</Badge>
+                  </div>
+                  <p className="text-xs text-gray-600">Share this code with fellow travelers</p>
+                </div>
+                
+                <div className="flex gap-2">
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="flex-1"
+                    onClick={() => {
+                      navigator.clipboard.writeText(shareUrl);
+                      setLinkCopied(true);
+                      setTimeout(() => setLinkCopied(false), 2000);
+                    }}
+                  >
+                    {linkCopied ? "Copied!" : "Copy Link"}
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => setShowQrCode(true)}
+                  >
+                    <QrCode className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                {/* QR Code Modal */}
+                {showQrCode && (
+                  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowQrCode(false)}>
+                    <div className="bg-white p-6 rounded-2xl max-w-sm mx-4" onClick={(e) => e.stopPropagation()}>
+                      <div className="text-center">
+                        <h3 className="font-semibold text-lg mb-2">Scan to Join Trip</h3>
+                        <div className="bg-white p-4 rounded-lg border-2 border-gray-100 mb-4">
+                          {qrCodeUrl && <img src={qrCodeUrl} alt="Trip QR Code" className="mx-auto" />}
+                        </div>
+                        <p className="text-sm text-gray-600 mb-4">
+                          Trip: <strong>{activeTrip.title}</strong><br/>
+                          Code: <span className="font-mono">{activeTrip.tripCode}</span>
+                        </p>
+                        <Button onClick={() => setShowQrCode(false)} className="w-full">
+                          Close
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card>
               <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2"><Wallet className="h-5 w-5"/>Expenses</CardTitle></CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -380,10 +466,63 @@ export default function TripDetailPage() {
                   <Input placeholder="Amount" value={newExpense.amount} onChange={e=>setNewExpense({...newExpense, amount: e.target.value})} className="col-span-2"/>
                   <Input placeholder="Paid by" value={newExpense.paidBy} onChange={e=>setNewExpense({...newExpense, paidBy: e.target.value})} className="col-span-1"/>
                 </div>
+                
+                {/* Currency Selector */}
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">Expense Currency:</span>
+                  <Select value={currentCurrency} onValueChange={(value) => handleCurrencyChange(value as Currency)}>
+                    <SelectTrigger className="w-48">
+                      <SelectValue>
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono font-semibold text-emerald-600">
+                            {currencySymbols[currentCurrency]}
+                          </span>
+                          <span>{currencyNames[currentCurrency]}</span>
+                        </div>
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(Object.keys(currencySymbols) as Currency[]).map((currency) => (
+                        <SelectItem key={currency} value={currency}>
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono font-semibold text-emerald-600 w-8">
+                              {currencySymbols[currency]}
+                            </span>
+                            <span>{currencyNames[currency]}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
                 <div className="flex justify-end"><Button size="sm" onClick={addExpense}><Plus className="mr-2 h-4 w-4"/>Add expense</Button></div>
                 <Separator className="my-2 bg-white/10"/>
+                
+                {/* Currency Breakdown */}
                 <div className="space-y-2 text-sm">
-                  <div className="flex items-center justify-between"><span>Total</span><span className="font-medium">{formatCurrency(split.total, currentCurrency)}</span></div>
+                  <div className="font-medium text-gray-700 mb-2">Expense Summary</div>
+                  {Object.entries(
+                    activeTrip.expenses.reduce((acc, e) => {
+                      acc[e.currency] = (acc[e.currency] || 0) + e.amount;
+                      return acc;
+                    }, {} as Record<Currency, number>)
+                  ).map(([currency, total]) => (
+                    <div key={currency} className="flex items-center justify-between">
+                      <span className="flex items-center gap-2">
+                        <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
+                          {currencySymbols[currency as Currency]}
+                        </span>
+                        {currencyNames[currency as Currency]}
+                      </span>
+                      <span className="font-medium">{formatCurrency(total, currency as Currency)}</span>
+                    </div>
+                  ))}
+                </div>
+                
+                <Separator className="my-2 bg-gray-200"/>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center justify-between"><span>Total (in {currencyNames[currentCurrency]})</span><span className="font-medium">{formatCurrency(split.total, currentCurrency)}</span></div>
                   <div className="flex items-center justify-between"><span>Per person</span><span className="font-medium">{formatCurrency(split.perPerson, currentCurrency)}</span></div>
                 </div>
                 <div className="space-y-2">

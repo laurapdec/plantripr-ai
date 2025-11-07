@@ -122,10 +122,10 @@ export default function AboutPage() {
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900">Myriam Tsafack</h3>
-                  <p className="text-gray-600 mb-4">Co-Founder & Product Lead</p>
+                  <p className="text-gray-600 mb-4">Chief Executive Officer & Co-Founder</p>
                   <p className="text-sm text-gray-500 mb-4">
-                    Passionate about creating intuitive user experiences and leveraging AI 
-                    to solve real-world travel challenges. Loves exploring hidden gems 
+                    Visionary leader passionate about creating intuitive user experiences and leveraging AI 
+                    to solve real-world travel challenges. Drives strategic direction and loves exploring hidden gems 
                     and local cultures around the world.
                   </p>
                   <a 
@@ -150,11 +150,11 @@ export default function AboutPage() {
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900">Laura Pereira de Castro</h3>
-                  <p className="text-gray-600 mb-4">Co-Founder & Tech Lead</p>
+                  <p className="text-gray-600 mb-4">Chief Technology Officer & Co-Founder</p>
                   <p className="text-sm text-gray-500 mb-4">
-                    Full-stack developer and AI enthusiast who believes technology should 
-                    simplify life&apos;s adventures. Combines technical expertise with a love 
-                    for spontaneous travel and outdoor exploration.
+                    Technical visionary and full-stack developer who architects scalable AI solutions. 
+                    Leads engineering innovation while believing technology should 
+                    simplify life&apos;s adventures and outdoor exploration.
                   </p>
                   <a 
                     href="https://laurapdec.com"
