@@ -149,14 +149,14 @@ const demoTrip: Trip = {
     },
     { 
       id: "e2", 
-      label: "Groceries", 
-      amount: 126.5, 
+      label: "Coffee & Snacks", 
+      amount: 47.50, 
       paidBy: "David", 
-      splitType: "equal" as SplitType,
+      splitType: "exact" as SplitType,
       splitWith: [
-        { userId: "g1", userName: "Laura" },
-        { userId: "g2", userName: "David" },
-        { userId: "g3", userName: "Nina" }
+        { userId: "g1", userName: "Laura", amount: 12.50 }, // Coffee + pastry
+        { userId: "g2", userName: "David", amount: 8.00 },  // Just coffee
+        { userId: "g3", userName: "Nina", amount: 27.00 }   // Coffee + lunch sandwich
       ], 
       currency: "USD" as Currency,
       category: "Food"
@@ -173,6 +173,20 @@ const demoTrip: Trip = {
       ], 
       currency: "EUR" as Currency,
       category: "Activities"
+    },
+    { 
+      id: "e4", 
+      label: "Car Rental", 
+      amount: 240, 
+      paidBy: "Nina", 
+      splitType: "percentage" as SplitType,
+      splitWith: [
+        { userId: "g1", userName: "Laura", percentage: 50 },   // Main driver
+        { userId: "g2", userName: "David", percentage: 30 },   // Secondary driver
+        { userId: "g3", userName: "Nina", percentage: 20 }     // Passenger only
+      ], 
+      currency: "USD" as Currency,
+      category: "Transportation"
     },
   ],
   days: [
@@ -263,7 +277,9 @@ export default function TripDetailPage() {
     splitType: "equal" as SplitType,
     category: "",
     notes: "",
-    selectedSplitMembers: activeTrip.guests.map(g => g.id)
+    selectedSplitMembers: activeTrip.guests.map(g => g.id),
+    exactAmounts: {} as Record<string, string>, // guest.id -> amount string
+    percentages: {} as Record<string, string>   // guest.id -> percentage string
   });
   const [showAdvancedSplit, setShowAdvancedSplit] = useState(false);
   const [newGuest, setNewGuest] = useState({ name: "", email: "" });
@@ -313,15 +329,31 @@ export default function TripDetailPage() {
     const amt = parseFloat(newExpense.amount);
     if (!newExpense.label || isNaN(amt)) return;
     
-    // Create split array based on selected members
+    // Create split array based on selected members and split type
     const splitWith: ExpenseSplit[] = newExpense.selectedSplitMembers.map(memberId => {
       const guest = activeTrip.guests.find(g => g.id === memberId);
-      return {
-        userId: memberId,
-        userName: guest?.name || "",
-        amount: newExpense.splitType === "exact" ? amt / newExpense.selectedSplitMembers.length : undefined,
-        percentage: newExpense.splitType === "percentage" ? 100 / newExpense.selectedSplitMembers.length : undefined
-      };
+      
+      if (newExpense.splitType === "exact") {
+        const exactAmount = parseFloat(newExpense.exactAmounts[memberId] || "0");
+        return {
+          userId: memberId,
+          userName: guest?.name || "",
+          amount: exactAmount
+        };
+      } else if (newExpense.splitType === "percentage") {
+        const percentage = parseFloat(newExpense.percentages[memberId] || "0");
+        return {
+          userId: memberId,
+          userName: guest?.name || "",
+          percentage: percentage
+        };
+      } else {
+        // Equal split
+        return {
+          userId: memberId,
+          userName: guest?.name || ""
+        };
+      }
     });
     
     const e: Expense = {
@@ -344,7 +376,9 @@ export default function TripDetailPage() {
       splitType: "equal" as SplitType,
       category: "",
       notes: "",
-      selectedSplitMembers: activeTrip.guests.map(g => g.id)
+      selectedSplitMembers: activeTrip.guests.map(g => g.id),
+      exactAmounts: {},
+      percentages: {}
     });
     setShowAdvancedSplit(false);
   }
@@ -774,13 +808,117 @@ export default function TripDetailPage() {
                                 )}
                                 <span className="font-medium">{guest.name}</span>
                               </div>
-                              {newExpense.selectedSplitMembers.includes(guest.id) && newExpense.splitType === "equal" && (
-                                <Badge variant="outline" className="text-xs">
-                                  {formatCurrency(parseFloat(newExpense.amount || "0") / newExpense.selectedSplitMembers.length, currentCurrency)}
-                                </Badge>
+
+                              {newExpense.selectedSplitMembers.includes(guest.id) && (
+                                <div className="flex items-center gap-2">
+                                  {newExpense.splitType === "equal" && (
+                                    <Badge variant="outline" className="text-xs">
+                                      {formatCurrency(parseFloat(newExpense.amount || "0") / newExpense.selectedSplitMembers.length, currentCurrency)}
+                                    </Badge>
+                                  )}
+
+                                  {newExpense.splitType === "exact" && (
+                                    <div className="flex items-center gap-1">
+                                      <span className="text-xs font-mono text-emerald-600">
+                                        {currencySymbols[currentCurrency]}
+                                      </span>
+                                      <Input
+                                        type="number"
+                                        step="0.01"
+                                        placeholder="0.00"
+                                        value={newExpense.exactAmounts[guest.id] || ""}
+                                        onChange={(e) => setNewExpense(prev => ({
+                                          ...prev,
+                                          exactAmounts: {
+                                            ...prev.exactAmounts,
+                                            [guest.id]: e.target.value
+                                          }
+                                        }))}
+                                        className="w-20 h-8 text-xs"
+                                      />
+                                    </div>
+                                  )}
+
+                                  {newExpense.splitType === "percentage" && (
+                                    <div className="flex items-center gap-1">
+                                      <Input
+                                        type="number"
+                                        step="0.1"
+                                        min="0"
+                                        max="100"
+                                        placeholder="0"
+                                        value={newExpense.percentages[guest.id] || ""}
+                                        onChange={(e) => setNewExpense(prev => ({
+                                          ...prev,
+                                          percentages: {
+                                            ...prev.percentages,
+                                            [guest.id]: e.target.value
+                                          }
+                                        }))}
+                                        className="w-16 h-8 text-xs"
+                                      />
+                                      <span className="text-xs text-gray-500">%</span>
+                                    </div>
+                                  )}
+                                </div>
                               )}
                             </div>
                           ))}
+
+                          {/* Summary for exact amounts */}
+                          {newExpense.splitType === "exact" && (
+                            <div className="mt-2 p-2 bg-gray-50 rounded-lg">
+                              <div className="text-xs text-gray-600 mb-1">Split Summary:</div>
+                              {(() => {
+                                const totalExactAmounts = newExpense.selectedSplitMembers.reduce((sum, guestId) => {
+                                  return sum + (parseFloat(newExpense.exactAmounts[guestId] || "0") || 0);
+                                }, 0);
+                                const totalExpense = parseFloat(newExpense.amount || "0");
+                                const difference = totalExpense - totalExactAmounts;
+                                
+                                return (
+                                  <div className="space-y-1">
+                                    <div className="flex justify-between text-xs">
+                                      <span>Total expense:</span>
+                                      <span className="font-medium">{formatCurrency(totalExpense, currentCurrency)}</span>
+                                    </div>
+                                    <div className="flex justify-between text-xs">
+                                      <span>Sum of splits:</span>
+                                      <span className="font-medium">{formatCurrency(totalExactAmounts, currentCurrency)}</span>
+                                    </div>
+                                    <div className="flex justify-between text-xs">
+                                      <span>Difference:</span>
+                                      <span className={`font-medium ${difference === 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                        {formatCurrency(Math.abs(difference), currentCurrency)} 
+                                        {difference > 0 ? ' remaining' : difference < 0 ? ' over' : ' ✓'}
+                                      </span>
+                                    </div>
+                                  </div>
+                                );
+                              })()}
+                            </div>
+                          )}
+
+                          {/* Summary for percentages */}
+                          {newExpense.splitType === "percentage" && (
+                            <div className="mt-2 p-2 bg-gray-50 rounded-lg">
+                              <div className="text-xs text-gray-600 mb-1">Percentage Summary:</div>
+                              {(() => {
+                                const totalPercentage = newExpense.selectedSplitMembers.reduce((sum, guestId) => {
+                                  return sum + (parseFloat(newExpense.percentages[guestId] || "0") || 0);
+                                }, 0);
+                                
+                                return (
+                                  <div className="flex justify-between text-xs">
+                                    <span>Total percentage:</span>
+                                    <span className={`font-medium ${totalPercentage === 100 ? 'text-green-600' : 'text-red-600'}`}>
+                                      {totalPercentage}% {totalPercentage === 100 ? '✓' : `(need ${100 - totalPercentage}% more)`}
+                                    </span>
+                                  </div>
+                                );
+                              })()}
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -828,7 +966,28 @@ export default function TripDetailPage() {
                   <Button 
                     onClick={addExpense} 
                     className="w-full bg-emerald-500 hover:bg-emerald-400"
-                    disabled={!newExpense.label || !newExpense.amount || newExpense.selectedSplitMembers.length === 0}
+                    disabled={(() => {
+                      if (!newExpense.label || !newExpense.amount || newExpense.selectedSplitMembers.length === 0) {
+                        return true;
+                      }
+                      
+                      if (newExpense.splitType === "exact") {
+                        const totalExactAmounts = newExpense.selectedSplitMembers.reduce((sum, guestId) => {
+                          return sum + (parseFloat(newExpense.exactAmounts[guestId] || "0") || 0);
+                        }, 0);
+                        const totalExpense = parseFloat(newExpense.amount || "0");
+                        return Math.abs(totalExpense - totalExactAmounts) > 0.01; // Allow small rounding differences
+                      }
+                      
+                      if (newExpense.splitType === "percentage") {
+                        const totalPercentage = newExpense.selectedSplitMembers.reduce((sum, guestId) => {
+                          return sum + (parseFloat(newExpense.percentages[guestId] || "0") || 0);
+                        }, 0);
+                        return Math.abs(totalPercentage - 100) > 0.1; // Allow small rounding differences
+                      }
+                      
+                      return false;
+                    })()}
                   >
                     <Plus className="mr-2 h-4 w-4"/>
                     Add Expense ({formatCurrency(parseFloat(newExpense.amount || "0"), currentCurrency)})
