@@ -13,6 +13,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
+import { HotelCard } from "@/components/HotelCard";
+import { ActivityCard } from "@/components/ActivityCard";
+import { usePriceEstimates, useHotelSearch, useActivitySearch } from "@/hooks";
 import { 
   Plane,
   MapPin,
@@ -27,6 +30,9 @@ import {
   Star,
   LogOut,
   User,
+  Building2,
+  Activity,
+  Loader2,
 } from "lucide-react";
 
 // Mock API data for destinations with price estimates
@@ -72,6 +78,7 @@ export default function NewTripPage() {
   const [travelers, setTravelers] = useState<number>(2);
   const [selectedBudget, setSelectedBudget] = useState<string>("");
   const [showPriceEstimates, setShowPriceEstimates] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<'details' | 'hotels' | 'activities'>('details');
   
   // Flexible dates options
   const [isFlexibleDates, setIsFlexibleDates] = useState<boolean>(false);
@@ -82,14 +89,55 @@ export default function NewTripPage() {
   // Additional options
   const [hasPets, setHasPets] = useState<boolean>(false);
 
-  // Get destination from URL params
+  // Calculate nights from dates
+  const calculateNights = () => {
+    if (!startDate || !endDate) return 7; // default
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    return Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+  };
+
+  // API hooks for real data
+  const { 
+    data: priceEstimates, 
+    isLoading: priceLoading 
+  } = usePriceEstimates(
+    destination, 
+    travelers, 
+    isFlexibleDates ? parseInt(flexibleDuration) : calculateNights(),
+    !!destination
+  );
+
+  const { 
+    data: hotelData, 
+    isLoading: hotelsLoading 
+  } = useHotelSearch({
+    destination,
+    checkIn: startDate,
+    checkOut: endDate,
+    adults: travelers,
+    currency: 'USD'
+  }, !!destination && !!startDate && !!endDate);
+
+  const { 
+    data: activityData, 
+    isLoading: activitiesLoading 
+  } = useActivitySearch({
+    destination,
+    startDate,
+    endDate,
+    travelers,
+    currency: 'USD',
+    limit: 12
+  }, !!destination);
+
+  // Get destination from URL params and update state
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const destinationParam = urlParams.get('destination');
-    if (destinationParam && destinationData[destinationParam as keyof typeof destinationData]) {
+    if (destinationParam) {
       setDestination(destinationParam);
-      const destData = destinationData[destinationParam as keyof typeof destinationData];
-      setTripName(`Trip to ${destData.name}`);
+      setTripName(`Trip to ${destinationParam}`);
       setShowPriceEstimates(true);
     }
   }, []);
@@ -141,15 +189,18 @@ export default function NewTripPage() {
       ),
       travelers,
       hasPets,
-      budget: selectedBudget
+      budget: selectedBudget,
+      hotels: hotelData?.hotels || [],
+      activities: activityData?.activities || []
     };
     
     console.log("Creating trip:", tripData);
-    // TODO: Create trip and redirect
+    // TODO: Save to backend and redirect
     window.location.href = `/trips/trip-${Date.now()}`;
   };
 
-  const currentDestination = destination ? destinationData[destination as keyof typeof destinationData] : null;
+  // Remove the currentDestination variable since we're using real data now
+  const hasDestinationData = !!destination && (!!priceEstimates || !!hotelData || !!activityData);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -262,7 +313,50 @@ export default function NewTripPage() {
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Form */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 space-y-6">
+            {/* Navigation Tabs */}
+            <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+              <button
+                onClick={() => setActiveTab('details')}
+                className={`flex-1 text-sm font-medium px-3 py-2 rounded-md transition-colors ${
+                  activeTab === 'details' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <Settings className="h-4 w-4" />
+                  Trip Details
+                </div>
+              </button>
+              <button
+                onClick={() => setActiveTab('hotels')}
+                disabled={!destination || (!startDate && !isFlexibleDates)}
+                className={`flex-1 text-sm font-medium px-3 py-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                  activeTab === 'hotels' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <Building2 className="h-4 w-4" />
+                  Hotels
+                  {hotelsLoading && <Loader2 className="h-3 w-3 animate-spin" />}
+                </div>
+              </button>
+              <button
+                onClick={() => setActiveTab('activities')}
+                disabled={!destination}
+                className={`flex-1 text-sm font-medium px-3 py-2 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                  activeTab === 'activities' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <Activity className="h-4 w-4" />
+                  Activities
+                  {activitiesLoading && <Loader2 className="h-3 w-3 animate-spin" />}
+                </div>
+              </button>
+            </div>
+
+            {/* Tab Content */}
+            {activeTab === 'details' && (
             <Card>
               <CardHeader>
                 <CardTitle>Trip Details</CardTitle>
@@ -299,22 +393,17 @@ export default function NewTripPage() {
                 </div>
 
                 {/* Destination Display */}
-                {currentDestination && (
+                {destination && (
                   <div>
                     <Label className="text-sm font-medium text-gray-700">Destination</Label>
                     <div className="mt-1 flex items-center gap-3 p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
-                      <div className="w-12 h-12 relative rounded-lg overflow-hidden">
-                        <Image
-                          src={currentDestination.image}
-                          alt={currentDestination.name}
-                          fill
-                          className="object-cover"
-                        />
+                      <div className="w-12 h-12 relative rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center">
+                        <MapPin className="h-6 w-6 text-gray-400" />
                       </div>
                       <div>
-                        <h3 className="font-medium text-gray-900">{currentDestination.name}</h3>
+                        <h3 className="font-medium text-gray-900">{destination}</h3>
                         <p className="text-sm text-gray-600">
-                          Popular cities: {currentDestination.cities.join(", ")}
+                          {hotelData?.location?.country ? `${hotelData.location.country}` : 'Loading destination details...'}
                         </p>
                       </div>
                     </div>
