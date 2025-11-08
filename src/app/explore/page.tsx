@@ -144,18 +144,18 @@ export default function ExplorePage() {
             
             <nav className="hidden md:flex items-center gap-6">
               <Link href="/" className="text-gray-900 font-medium">Explore</Link>
-              <Link href="/my-trips" className="text-gray-600 hover:text-gray-900">My Trips</Link>
+              <Link href="/trips" className="text-gray-600 hover:text-gray-900">Trips</Link>
             </nav>
           </div>
 
           <div className="flex items-center gap-3">
-            <Link href="/my-trips">
+            <Link href="/trips">
               <Button variant="outline" className="hidden sm:flex">
                 <Compass className="mr-2 h-4 w-4" />
-                My Trips
+                Trips
               </Button>
             </Link>
-            <Link href="/my-trips">
+            <Link href="/trips">
               <Button variant="outline" className="sm:hidden">
                 <Compass className="h-4 w-4" />
               </Button>

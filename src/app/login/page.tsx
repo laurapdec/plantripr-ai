@@ -30,8 +30,8 @@ export default function LoginPage() {
     setTimeout(() => {
       console.log("Logging in:", { email, password });
       setIsLoading(false);
-      // Redirect to explore (home page)
-      window.location.href = "/explore";
+      // Redirect to trips dashboard
+      window.location.href = "/trips";
     }, 1500);
   };
 
