@@ -14,17 +14,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Plantrip'r AI - AI-Powered Travel Planning",
+  title: "Plantrip'r - Smart Travel Planning",
   description: "Plan perfect trips with AI. Create personalized itineraries, collaborate with friends, and manage expenses in multiple currencies.",
   keywords: "travel planning, AI travel, trip planner, itinerary, travel collaboration",
   authors: [{ name: "Myriam Tsafack" }, { name: "Laura Pereira de Castro" }],
-  creator: "Plantrip'r AI",
+  creator: "Plantrip'r",
   openGraph: {
     type: "website",
     locale: "en_US",
     url: "https://plantripr.ai",
-    siteName: "Plantrip'r AI",
-    title: "Plantrip'r AI - AI-Powered Travel Planning",
+    siteName: "Plantrip'r",
+    title: "Plantrip'r - Smart Travel Planning",
     description: "Plan perfect trips with AI. Create personalized itineraries, collaborate with friends, and manage expenses.",
   },
   robots: {

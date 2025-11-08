@@ -26,7 +26,7 @@ export default function AboutPage() {
               <Plane className="h-4 w-4 text-white" />
             </span>
             <div className="font-semibold tracking-tight text-xl">
-              Plantrip&apos;r <span className="text-emerald-500">AI</span>
+              Plantrip&apos;r
             </div>
           </Link>
 
@@ -52,11 +52,11 @@ export default function AboutPage() {
       {/* Hero Section */}
       <section className="mx-auto max-w-4xl px-4 py-16 text-center">
         <h1 className="text-4xl font-bold text-gray-900 mb-6">
-          About Plantrip&apos;r AI
+          About Plantrip&apos;r
         </h1>
         <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
           We&apos;re passionate travelers and technologists who believe that planning the perfect trip 
-          should be exciting, not overwhelming. That&apos;s why we created Plantrip&apos;r AI.
+          should be exciting, not overwhelming. That&apos;s why we created Plantrip&apos;r.
         </p>
       </section>
 
@@ -72,7 +72,7 @@ export default function AboutPage() {
             </p>
             <p className="text-lg text-gray-600 mb-6">
               Whether you&apos;re planning a weekend getaway or a month-long adventure, 
-              Plantrip&apos;r AI helps you discover hidden gems, optimize your schedule, 
+              Plantrip&apos;r helps you discover hidden gems, optimize your schedule, 
               and collaborate seamlessly with your travel companions.
             </p>
             <div className="flex items-center gap-6 text-sm text-gray-500">
@@ -222,7 +222,7 @@ export default function AboutPage() {
             Ready to Plan Your Next Adventure?
           </h2>
           <p className="text-lg text-gray-600 mb-8">
-            Join thousands of travelers who trust Plantrip&apos;r AI to create their perfect trips.
+            Join thousands of travelers who trust Plantrip&apos;r to create their perfect trips.
           </p>
           
           <div className="flex items-center justify-center gap-4">
@@ -243,7 +243,7 @@ export default function AboutPage() {
       {/* Footer */}
       <footer className="border-t border-gray-200 bg-white py-8">
         <div className="mx-auto max-w-6xl px-4 text-center text-sm text-gray-600">
-          <p>&copy; 2025 Plantrip&apos;r AI. Built with ❤️ for travelers everywhere.</p>
+          <p>&copy; 2025 Plantrip&apos;r. Built with ❤️ for travelers everywhere.</p>
         </div>
       </footer>
     </div>

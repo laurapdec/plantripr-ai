@@ -6,6 +6,7 @@ import QRCode from "qrcode";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -35,25 +36,39 @@ import {
 } from "lucide-react";
 
 // --------- Mock helpers ---------
-type Currency = "USD" | "EUR" | "GBP" | "JPY" | "CAD" | "AUD";
+type Currency = "USD" | "EUR" | "GBP" | "JPY" | "CAD" | "AUD" | "CHF" | "SEK" | "NOK" | "DKK" | "PLN" | "CZK" | "CNY" | "KRW" | "INR" | "BRL" | "MXN" | "ZAR" | "SGD" | "HKD" | "NZD" | "TRY" | "RUB" | "THB" | "AED" | "ILS" | "CLP" | "COP" | "PEN" | "ARS" | "NGN" | "GHS" | "KES" | "UGX" | "TZS" | "ETB" | "EGP" | "MAD" | "TND" | "DZD" | "XAF" | "XOF" | "MWK" | "ZMW" | "BWP" | "NAD" | "SZL" | "LSL" | "MZN" | "AOA" | "RWF" | "BIF" | "DJF" | "SOS" | "SSP" | "SDG" | "LRD" | "SLL" | "GMD" | "GNF" | "CVE" | "STP" | "MRU" | "LYD" | "CDF" | "ERN" | "MGA" | "KMF" | "SCR" | "MUR";
 
 const currencySymbols: Record<Currency, string> = {
-  USD: "US$",
-  EUR: "€",
-  GBP: "£",
-  JPY: "¥",
-  CAD: "CA$",
-  AUD: "AU$"
+  USD: "$", EUR: "€", GBP: "£", JPY: "¥", CAD: "CA$", AUD: "AU$",
+  CHF: "CHF", SEK: "kr", NOK: "kr", DKK: "kr", PLN: "zł", CZK: "Kč",
+  CNY: "¥", KRW: "₩", INR: "₹", BRL: "R$", MXN: "Mex$", ZAR: "R",
+  SGD: "S$", HKD: "HK$", NZD: "NZ$", TRY: "₺", RUB: "₽", THB: "฿",
+  AED: "د.إ", ILS: "₪", CLP: "CL$", COP: "COL$", PEN: "S/", ARS: "AR$",
+  // African currencies
+  NGN: "₦", GHS: "₵", KES: "KSh", UGX: "USh", TZS: "TSh", ETB: "Br",
+  EGP: "£", MAD: "د.م.", TND: "د.ت", DZD: "د.ج", XAF: "FCFA", XOF: "CFA",
+  MWK: "MK", ZMW: "ZK", BWP: "P", NAD: "N$", SZL: "E", LSL: "L",
+  MZN: "MT", AOA: "Kz", RWF: "RWF", BIF: "FBu", DJF: "Fdj", SOS: "Sh",
+  SSP: "£", SDG: "ج.س.", LRD: "L$", SLL: "Le", GMD: "D", GNF: "FG",
+  CVE: "Esc", STP: "Db", MRU: "UM", LYD: "ل.د", CDF: "FC", ERN: "Nfk",
+  MGA: "Ar", KMF: "CF", SCR: "₨", MUR: "₨"
 };
 
 const currencyNames: Record<Currency, string> = {
-  USD: "US Dollar",
-  EUR: "Euro", 
-  GBP: "British Pound",
-  JPY: "Japanese Yen",
-  CAD: "Canadian Dollar",
-  AUD: "Australian Dollar"
-};
+  USD: "US Dollar", EUR: "Euro", GBP: "British Pound", JPY: "Japanese Yen", CAD: "Canadian Dollar", AUD: "Australian Dollar",
+  CHF: "Swiss Franc", SEK: "Swedish Krona", NOK: "Norwegian Krone", DKK: "Danish Krone", PLN: "Polish Zloty", CZK: "Czech Koruna",
+  CNY: "Chinese Yuan", KRW: "South Korean Won", INR: "Indian Rupee", BRL: "Brazilian Real", MXN: "Mexican Peso", ZAR: "South African Rand",
+  SGD: "Singapore Dollar", HKD: "Hong Kong Dollar", NZD: "New Zealand Dollar", TRY: "Turkish Lira", RUB: "Russian Ruble", THB: "Thai Baht",
+  AED: "UAE Dirham", ILS: "Israeli New Shekel", CLP: "Chilean Peso", COP: "Colombian Peso", PEN: "Peruvian Sol", ARS: "Argentine Peso",
+  // African currencies
+  NGN: "Nigerian Naira", GHS: "Ghanaian Cedi", KES: "Kenyan Shilling", UGX: "Ugandan Shilling", TZS: "Tanzanian Shilling", ETB: "Ethiopian Birr",
+  EGP: "Egyptian Pound", MAD: "Moroccan Dirham", TND: "Tunisian Dinar", DZD: "Algerian Dinar", XAF: "Central African CFA Franc", XOF: "West African CFA Franc",
+  MWK: "Malawian Kwacha", ZMW: "Zambian Kwacha", BWP: "Botswana Pula", NAD: "Namibian Dollar", SZL: "Swazi Lilangeni", LSL: "Lesotho Loti",
+  MZN: "Mozambican Metical", AOA: "Angolan Kwanza", RWF: "Rwandan Franc", BIF: "Burundian Franc", DJF: "Djiboutian Franc", SOS: "Somali Shilling",
+  SSP: "South Sudanese Pound", SDG: "Sudanese Pound", LRD: "Liberian Dollar", SLL: "Sierra Leonean Leone", GMD: "Gambian Dalasi", GNF: "Guinean Franc",
+  CVE: "Cape Verdean Escudo", STP: "São Tomé and Príncipe Dobra", MRU: "Mauritanian Ouguiya", LYD: "Libyan Dinar", CDF: "Congolese Franc", ERN: "Eritrean Nakfa",
+  MGA: "Malagasy Ariary", KMF: "Comorian Franc", SCR: "Seychellois Rupee", MUR: "Mauritian Rupee"
+}; 
 
 const formatCurrency = (amount: number, currencyCode: Currency) => {
   return new Intl.NumberFormat(undefined, { 
@@ -63,7 +78,27 @@ const formatCurrency = (amount: number, currencyCode: Currency) => {
 };
 
 type Guest = { id: string; name: string; email?: string; avatar?: string; rsvp: "yes"|"no"|"maybe" };
-type Expense = { id: string; label: string; amount: number; paidBy: string; splitWith: string[]; currency: Currency };
+
+type SplitType = "equal" | "exact" | "percentage";
+
+type ExpenseSplit = {
+  userId: string;
+  userName: string;
+  amount?: number; // for exact amounts
+  percentage?: number; // for percentage splits
+};
+
+type Expense = { 
+  id: string; 
+  label: string; 
+  amount: number; 
+  paidBy: string; 
+  splitType: SplitType;
+  splitWith: ExpenseSplit[];
+  currency: Currency;
+  category?: string;
+  notes?: string;
+};
 type Activity = { id: string; time: string; title: string; note?: string; location?: string };
 type DayPlan = { date: string; activities: Activity[] };
 
@@ -98,9 +133,47 @@ const demoTrip: Trip = {
   isPublic: true,
   tripCode: "ANS-2026-A7X9",
   expenses: [
-    { id: "e1", label: "Cabin deposit", amount: 480, paidBy: "Laura", splitWith: ["Laura", "David", "Nina"], currency: "USD" as Currency },
-    { id: "e2", label: "Groceries", amount: 126.5, paidBy: "David", splitWith: ["Laura", "David", "Nina"], currency: "USD" as Currency },
-    { id: "e3", label: "Park Passes", amount: 90, paidBy: "Laura", splitWith: ["Laura", "David"], currency: "EUR" as Currency },
+    { 
+      id: "e1", 
+      label: "Cabin deposit", 
+      amount: 480, 
+      paidBy: "Laura", 
+      splitType: "equal" as SplitType,
+      splitWith: [
+        { userId: "g1", userName: "Laura" },
+        { userId: "g2", userName: "David" },
+        { userId: "g3", userName: "Nina" }
+      ], 
+      currency: "USD" as Currency,
+      category: "Accommodation"
+    },
+    { 
+      id: "e2", 
+      label: "Groceries", 
+      amount: 126.5, 
+      paidBy: "David", 
+      splitType: "equal" as SplitType,
+      splitWith: [
+        { userId: "g1", userName: "Laura" },
+        { userId: "g2", userName: "David" },
+        { userId: "g3", userName: "Nina" }
+      ], 
+      currency: "USD" as Currency,
+      category: "Food"
+    },
+    { 
+      id: "e3", 
+      label: "Park Passes", 
+      amount: 90, 
+      paidBy: "Laura", 
+      splitType: "exact" as SplitType,
+      splitWith: [
+        { userId: "g1", userName: "Laura", amount: 45 },
+        { userId: "g2", userName: "David", amount: 45 }
+      ], 
+      currency: "EUR" as Currency,
+      category: "Activities"
+    },
   ],
   days: [
     {
@@ -127,12 +200,19 @@ function useExpenseSplit(expenses: Expense[], guests: Guest[], displayCurrency: 
 
     // Simple conversion rates (in a real app, these would come from an API)
     const exchangeRates: Record<Currency, number> = {
-      USD: 1.0,
-      EUR: 0.85,
-      GBP: 0.75,
-      JPY: 110.0,
-      CAD: 1.25,
-      AUD: 1.35
+      USD: 1.0, EUR: 0.85, GBP: 0.75, JPY: 110.0, CAD: 1.25, AUD: 1.35,
+      CHF: 0.88, SEK: 10.5, NOK: 10.8, DKK: 6.5, PLN: 4.2, CZK: 23.5,
+      CNY: 7.2, KRW: 1250, INR: 83, BRL: 5.1, MXN: 18.5, ZAR: 18.8,
+      SGD: 1.35, HKD: 7.8, NZD: 1.55, TRY: 27, RUB: 90, THB: 36,
+      AED: 3.67, ILS: 3.7, CLP: 850, COP: 4200, PEN: 3.8, ARS: 350,
+      // African currencies
+      NGN: 760, GHS: 12, KES: 150, UGX: 3700, TZS: 2300, ETB: 55,
+      EGP: 31, MAD: 10, TND: 3.1, DZD: 134, XAF: 590, XOF: 590,
+      MWK: 1030, ZMW: 20, BWP: 13.5, NAD: 18.8, SZL: 18.8, LSL: 18.8,
+      MZN: 63, AOA: 830, RWF: 1250, BIF: 2850, DJF: 178, SOS: 570,
+      SSP: 130, SDG: 600, LRD: 155, SLL: 20000, GMD: 67, GNF: 8600,
+      CVE: 99, STP: 22000, MRU: 36, LYD: 4.8, CDF: 2700, ERN: 15,
+      MGA: 4500, KMF: 440, SCR: 14, MUR: 45
     };
 
     // Convert all expenses to display currency for consistent splitting
@@ -142,8 +222,26 @@ function useExpenseSplit(expenses: Expense[], guests: Guest[], displayCurrency: 
     }));
 
     normalizedExpenses.forEach(e => {
-      const share = e.normalizedAmount / e.splitWith.length;
-      e.splitWith.forEach(p => (balances[p] -= share));
+      // Calculate splits based on split type
+      e.splitWith.forEach(split => {
+        let splitAmount: number;
+        
+        if (e.splitType === "equal") {
+          splitAmount = e.normalizedAmount / e.splitWith.length;
+        } else if (e.splitType === "exact" && split.amount) {
+          // Convert exact amount to display currency
+          const exactInDisplayCurrency = split.amount * (exchangeRates[displayCurrency] / exchangeRates[e.currency]);
+          splitAmount = exactInDisplayCurrency;
+        } else if (e.splitType === "percentage" && split.percentage) {
+          splitAmount = (e.normalizedAmount * split.percentage) / 100;
+        } else {
+          // Fallback to equal split
+          splitAmount = e.normalizedAmount / e.splitWith.length;
+        }
+        
+        balances[split.userName] -= splitAmount;
+      });
+      
       balances[e.paidBy] += e.normalizedAmount;
     });
 
@@ -158,7 +256,16 @@ function useExpenseSplit(expenses: Expense[], guests: Guest[], displayCurrency: 
 export default function TripDetailPage() {
   const [activeTrip, setActiveTrip] = useState<Trip>(demoTrip);
   const [prompt, setPrompt] = useState("");
-  const [newExpense, setNewExpense] = useState({ label: "", amount: "", paidBy: "Laura" });
+  const [newExpense, setNewExpense] = useState({ 
+    label: "", 
+    amount: "", 
+    paidBy: "Laura",
+    splitType: "equal" as SplitType,
+    category: "",
+    notes: "",
+    selectedSplitMembers: activeTrip.guests.map(g => g.id)
+  });
+  const [showAdvancedSplit, setShowAdvancedSplit] = useState(false);
   const [newGuest, setNewGuest] = useState({ name: "", email: "" });
   const [linkCopied, setLinkCopied] = useState(false);
   const [currentCurrency, setCurrentCurrency] = useState<Currency>("USD");
@@ -205,16 +312,41 @@ export default function TripDetailPage() {
   function addExpense() {
     const amt = parseFloat(newExpense.amount);
     if (!newExpense.label || isNaN(amt)) return;
+    
+    // Create split array based on selected members
+    const splitWith: ExpenseSplit[] = newExpense.selectedSplitMembers.map(memberId => {
+      const guest = activeTrip.guests.find(g => g.id === memberId);
+      return {
+        userId: memberId,
+        userName: guest?.name || "",
+        amount: newExpense.splitType === "exact" ? amt / newExpense.selectedSplitMembers.length : undefined,
+        percentage: newExpense.splitType === "percentage" ? 100 / newExpense.selectedSplitMembers.length : undefined
+      };
+    });
+    
     const e: Expense = {
       id: Math.random().toString(36).slice(2, 8),
       label: newExpense.label,
       amount: amt,
       paidBy: newExpense.paidBy,
-      splitWith: activeTrip.guests.map((g: Guest) => g.name),
+      splitType: newExpense.splitType,
+      splitWith: splitWith,
       currency: currentCurrency,
+      category: newExpense.category,
+      notes: newExpense.notes
     };
+    
     setActiveTrip({ ...activeTrip, expenses: [...activeTrip.expenses, e] });
-    setNewExpense({ label: "", amount: "", paidBy: newExpense.paidBy });
+    setNewExpense({ 
+      label: "", 
+      amount: "", 
+      paidBy: newExpense.paidBy,
+      splitType: "equal" as SplitType,
+      category: "",
+      notes: "",
+      selectedSplitMembers: activeTrip.guests.map(g => g.id)
+    });
+    setShowAdvancedSplit(false);
   }
 
   function handleCurrencyChange(newCurrency: Currency) {
@@ -240,7 +372,7 @@ export default function TripDetailPage() {
               <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-500/15">
                 <Plane className="h-4 w-4 text-emerald-400" />
               </span>
-              <div className="font-semibold tracking-tight text-xl">Plantrip'r <span className="text-emerald-400">AI</span></div>
+              <div className="font-semibold tracking-tight text-xl">Plantrip&apos;r</div>
               <Badge variant="secondary" className="ml-2">Copilot</Badge>
             </div>
             <div className="flex items-center gap-2">
@@ -434,7 +566,7 @@ export default function TripDetailPage() {
                       <div className="text-center">
                         <h3 className="font-semibold text-lg mb-2">Scan to Join Trip</h3>
                         <div className="bg-white p-4 rounded-lg border-2 border-gray-100 mb-4">
-                          {qrCodeUrl && <img src={qrCodeUrl} alt="Trip QR Code" className="mx-auto" />}
+                          {qrCodeUrl && <Image src={qrCodeUrl} alt="Trip QR Code" width={200} height={200} className="mx-auto" />}
                         </div>
                         <p className="text-sm text-gray-600 mb-4">
                           Trip: <strong>{activeTrip.title}</strong><br/>
@@ -455,49 +587,255 @@ export default function TripDetailPage() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   {activeTrip.expenses.map(e => (
-                    <div key={e.id} className="flex items-center justify-between rounded-xl bg-gray-50 border border-gray-200 px-3 py-2">
-                      <div className="truncate text-sm">{e.label} <span className="text-gray-600">• paid by {e.paidBy}</span></div>
-                      <div className="font-medium">{formatCurrency(e.amount, e.currency)}</div>
+                    <div key={e.id} className="rounded-xl bg-gray-50 border border-gray-200 p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">{e.label}</span>
+                          {e.category && <Badge variant="outline" className="text-xs">{e.category}</Badge>}
+                        </div>
+                        <div className="font-bold text-emerald-600">{formatCurrency(e.amount, e.currency)}</div>
+                      </div>
+                      <div className="text-sm text-gray-600 space-y-1">
+                        <div>Paid by <span className="font-medium">{e.paidBy}</span></div>
+                        <div className="flex items-center gap-2">
+                          <span>Split {e.splitType}ly with {e.splitWith.length} {e.splitWith.length === 1 ? 'person' : 'people'}:</span>
+                          <div className="flex flex-wrap gap-1">
+                            {e.splitWith.slice(0, 3).map(split => (
+                              <Badge key={split.userId} variant="secondary" className="text-xs">
+                                {split.userName}
+                                {e.splitType === "exact" && split.amount && ` (${formatCurrency(split.amount, e.currency)})`}
+                                {e.splitType === "percentage" && split.percentage && ` (${split.percentage}%)`}
+                              </Badge>
+                            ))}
+                            {e.splitWith.length > 3 && (
+                              <Badge variant="secondary" className="text-xs">+{e.splitWith.length - 3} more</Badge>
+                            )}
+                          </div>
+                        </div>
+                        {e.notes && <div className="italic">&ldquo;{e.notes}&rdquo;</div>}
+                      </div>
                     </div>
                   ))}
                 </div>
-                <div className="grid grid-cols-6 gap-2">
-                  <Input placeholder="Label" value={newExpense.label} onChange={e=>setNewExpense({...newExpense, label: e.target.value})} className="col-span-3"/>
-                  <Input placeholder="Amount" value={newExpense.amount} onChange={e=>setNewExpense({...newExpense, amount: e.target.value})} className="col-span-2"/>
-                  <Input placeholder="Paid by" value={newExpense.paidBy} onChange={e=>setNewExpense({...newExpense, paidBy: e.target.value})} className="col-span-1"/>
-                </div>
-                
-                {/* Currency Selector */}
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Expense Currency:</span>
-                  <Select value={currentCurrency} onValueChange={(value) => handleCurrencyChange(value as Currency)}>
-                    <SelectTrigger className="w-48">
-                      <SelectValue>
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono font-semibold text-emerald-600">
-                            {currencySymbols[currentCurrency]}
-                          </span>
-                          <span>{currencyNames[currentCurrency]}</span>
+                {/* Advanced Expense Form */}
+                <div className="space-y-4 border rounded-lg p-4 bg-white">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium">Add New Expense</h4>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowAdvancedSplit(!showAdvancedSplit)}
+                    >
+                      {showAdvancedSplit ? "Simple" : "Advanced"}
+                    </Button>
+                  </div>
+                  
+                  {/* Basic Fields */}
+                  <div className="grid grid-cols-1 gap-3">
+                    <Input 
+                      placeholder="What did you buy? (e.g., Dinner, Gas, Hotel)" 
+                      value={newExpense.label} 
+                      onChange={e=>setNewExpense({...newExpense, label: e.target.value})}
+                    />
+                    <div className="grid grid-cols-2 gap-2">
+                      <Input 
+                        placeholder="Amount" 
+                        type="number"
+                        step="0.01"
+                        value={newExpense.amount} 
+                        onChange={e=>setNewExpense({...newExpense, amount: e.target.value})}
+                      />
+                      <div className="space-y-1">
+                        <Select value={currentCurrency} onValueChange={(value) => handleCurrencyChange(value as Currency)}>
+                          <SelectTrigger>
+                            <SelectValue>
+                              <div className="flex items-center gap-2">
+                                <span className="font-mono font-semibold text-emerald-600">
+                                  {currencySymbols[currentCurrency]}
+                                </span>
+                                <span className="hidden sm:block">{currencyNames[currentCurrency]}</span>
+                              </div>
+                            </SelectValue>
+                          </SelectTrigger>
+                          <SelectContent>
+                            {(Object.keys(currencySymbols) as Currency[]).map((currency) => (
+                              <SelectItem key={currency} value={currency}>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-mono font-semibold text-emerald-600 w-8">
+                                    {currencySymbols[currency]}
+                                  </span>
+                                  <span>{currencyNames[currency]}</span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <Input 
+                      placeholder="Category (optional)" 
+                      value={newExpense.category} 
+                      onChange={e=>setNewExpense({...newExpense, category: e.target.value})}
+                    />
+                  </div>
+                  
+                  {/* Who Paid */}
+                  <div>
+                    <Label className="text-sm font-medium mb-2 block">Who paid for this?</Label>
+                    <Select value={newExpense.paidBy} onValueChange={(value) => setNewExpense({...newExpense, paidBy: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Who paid for this expense?" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {activeTrip.guests.map((guest: Guest) => (
+                          <SelectItem key={guest.id} value={guest.name}>
+                            <div className="flex items-center gap-2">
+                              {guest.avatar ? (
+                                <Avatar className="w-5 h-5">
+                                  <AvatarImage src={guest.avatar} />
+                                  <AvatarFallback>{guest.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                                </Avatar>
+                              ) : (
+                                <div className="w-5 h-5 bg-gray-200 rounded-full flex items-center justify-center text-xs font-medium">
+                                  {guest.name.substring(0, 1).toUpperCase()}
+                                </div>
+                              )}
+                              <span>{guest.name}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Advanced Splitting Options */}
+                  {showAdvancedSplit && (
+                    <div className="space-y-4 border-t pt-4">
+                      <div>
+                        <Label className="text-sm font-medium mb-2 block">How should this be split?</Label>
+                        <Select 
+                          value={newExpense.splitType} 
+                          onValueChange={(value: SplitType) => setNewExpense({...newExpense, splitType: value})}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="equal">
+                              <div className="space-y-1">
+                                <div className="font-medium">Split Equally</div>
+                                <div className="text-xs text-gray-600">Everyone pays the same amount</div>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="exact">
+                              <div className="space-y-1">
+                                <div className="font-medium">Exact Amounts</div>
+                                <div className="text-xs text-gray-600">Specify exact amounts per person</div>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="percentage">
+                              <div className="space-y-1">
+                                <div className="font-medium">By Percentage</div>
+                                <div className="text-xs text-gray-600">Split by percentage shares</div>
+                              </div>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <Label className="text-sm font-medium mb-2 block">Who should split this expense?</Label>
+                        <div className="space-y-2">
+                          {activeTrip.guests.map((guest: Guest) => (
+                            <div key={guest.id} className="flex items-center justify-between p-2 border rounded-lg">
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="checkbox"
+                                  checked={newExpense.selectedSplitMembers.includes(guest.id)}
+                                  onChange={(e) => {
+                                    const isChecked = e.target.checked;
+                                    setNewExpense(prev => ({
+                                      ...prev,
+                                      selectedSplitMembers: isChecked 
+                                        ? [...prev.selectedSplitMembers, guest.id]
+                                        : prev.selectedSplitMembers.filter(id => id !== guest.id)
+                                    }));
+                                  }}
+                                />
+                                {guest.avatar ? (
+                                  <Avatar className="w-6 h-6">
+                                    <AvatarImage src={guest.avatar} />
+                                    <AvatarFallback>{guest.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                                  </Avatar>
+                                ) : (
+                                  <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-xs font-medium">
+                                    {guest.name.substring(0, 1).toUpperCase()}
+                                  </div>
+                                )}
+                                <span className="font-medium">{guest.name}</span>
+                              </div>
+                              {newExpense.selectedSplitMembers.includes(guest.id) && newExpense.splitType === "equal" && (
+                                <Badge variant="outline" className="text-xs">
+                                  {formatCurrency(parseFloat(newExpense.amount || "0") / newExpense.selectedSplitMembers.length, currentCurrency)}
+                                </Badge>
+                              )}
+                            </div>
+                          ))}
                         </div>
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(Object.keys(currencySymbols) as Currency[]).map((currency) => (
-                        <SelectItem key={currency} value={currency}>
-                          <div className="flex items-center gap-2">
-                            <span className="font-mono font-semibold text-emerald-600 w-8">
-                              {currencySymbols[currency]}
-                            </span>
-                            <span>{currencyNames[currency]}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                      </div>
+
+                      <div>
+                        <Label className="text-sm font-medium mb-2 block">Notes (optional)</Label>
+                        <Textarea 
+                          placeholder="Add any notes about this expense..."
+                          value={newExpense.notes}
+                          onChange={e=>setNewExpense({...newExpense, notes: e.target.value})}
+                          rows={2}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Quick Split for Simple Mode */}
+                  {!showAdvancedSplit && (
+                    <div>
+                      <Label className="text-sm font-medium mb-2 block">Split with:</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {activeTrip.guests.map((guest: Guest) => (
+                          <label key={guest.id} className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={newExpense.selectedSplitMembers.includes(guest.id)}
+                              onChange={(e) => {
+                                const isChecked = e.target.checked;
+                                setNewExpense(prev => ({
+                                  ...prev,
+                                  selectedSplitMembers: isChecked 
+                                    ? [...prev.selectedSplitMembers, guest.id]
+                                    : prev.selectedSplitMembers.filter(id => id !== guest.id)
+                                }));
+                              }}
+                            />
+                            <Badge variant={newExpense.selectedSplitMembers.includes(guest.id) ? "default" : "outline"} className="text-xs">
+                              {guest.name}
+                            </Badge>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <Button 
+                    onClick={addExpense} 
+                    className="w-full bg-emerald-500 hover:bg-emerald-400"
+                    disabled={!newExpense.label || !newExpense.amount || newExpense.selectedSplitMembers.length === 0}
+                  >
+                    <Plus className="mr-2 h-4 w-4"/>
+                    Add Expense ({formatCurrency(parseFloat(newExpense.amount || "0"), currentCurrency)})
+                  </Button>
                 </div>
                 
-                <div className="flex justify-end"><Button size="sm" onClick={addExpense}><Plus className="mr-2 h-4 w-4"/>Add expense</Button></div>
-                <Separator className="my-2 bg-white/10"/>
+                <Separator className="my-4"/>
                 
                 {/* Currency Breakdown */}
                 <div className="space-y-2 text-sm">

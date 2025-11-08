@@ -26,7 +26,7 @@ export default function PrivacyPage() {
               <Plane className="h-4 w-4 text-white" />
             </span>
             <div className="font-semibold tracking-tight text-xl">
-              Plantrip&apos;r <span className="text-emerald-500">AI</span>
+              Plantrip&apos;r
             </div>
           </Link>
 
@@ -57,7 +57,7 @@ export default function PrivacyPage() {
             <h1 className="text-4xl font-bold text-gray-900">Privacy Policy</h1>
           </div>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            This Privacy Policy explains how Plantrip&apos;r AI (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) collects, uses, 
+            This Privacy Policy explains how Plantrip&apos;r (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) collects, uses, 
             and protects your personal information. We comply with GDPR (EU), UK GDPR, CCPA (California), 
             and other applicable privacy regulations.
           </p>
@@ -262,42 +262,6 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Multi-Currency Support</h2>
-            <div className="bg-emerald-50 rounded-lg p-6">
-              <p className="text-gray-700 mb-3">
-                <strong>Currency Management:</strong> Plantrip&apos;r AI supports multiple currencies 
-                simultaneously. You can:
-              </p>
-              <ul className="space-y-2 ml-4">
-                <li className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-emerald-500 rounded-full mt-2"></div>
-                  <span className="text-gray-700">
-                    Double-click the currency symbol (like US$ or €) to change your expense currency
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-emerald-500 rounded-full mt-2"></div>
-                  <span className="text-gray-700">
-                    Track expenses in different currencies within the same trip
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-emerald-500 rounded-full mt-2"></div>
-                  <span className="text-gray-700">
-                    EUR and USD accounts are kept separate - no automatic mixing
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-emerald-500 rounded-full mt-2"></div>
-                  <span className="text-gray-700">
-                    Real-time currency conversion rates for expense splitting calculations
-                  </span>
-                </li>
-              </ul>
-            </div>
-          </section>
-
-          <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">4. Data Sharing & Third Parties</h2>
             
             <div className="bg-red-50 border border-red-200 p-4 rounded-lg mb-6">
@@ -394,9 +358,21 @@ export default function PrivacyPage() {
             
             <div className="bg-green-50 border border-green-200 p-6 rounded-lg mb-6">
               <h3 className="font-semibold text-green-900 mb-2">🇪🇺 GDPR Rights (EU Residents) 🇬🇧 UK GDPR Rights (UK Residents)</h3>
-              <p className="text-green-800 text-sm">
+              <p className="text-green-800 text-sm mb-3">
                 Exercise your rights free of charge. We respond within 30 days (extendable to 60 days for complex requests).
               </p>
+              <div className="flex gap-3">
+                <Link href="/account/manage">
+                  <Button size="sm" className="bg-emerald-500 hover:bg-emerald-400 text-white">
+                    Manage Your Data
+                  </Button>
+                </Link>
+                <Link href="/contact">
+                  <Button size="sm" variant="outline">
+                    Contact Us
+                  </Button>
+                </Link>
+              </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
@@ -448,9 +424,12 @@ export default function PrivacyPage() {
                     <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Art. 20</span>
                     Right to Data Portability
                   </h4>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 mb-2">
                     Receive your data in a structured, machine-readable format (JSON/CSV).
                   </p>
+                  <Link href="/account/manage" className="text-xs text-emerald-600 hover:text-emerald-700">
+                    Export Data →
+                  </Link>
                 </div>
                 
                 <div className="p-4 border border-gray-200 rounded-lg">
@@ -671,11 +650,18 @@ export default function PrivacyPage() {
           <p className="text-gray-600 mb-4">
             We&apos;re committed to protecting your privacy while helping you create amazing trips.
           </p>
-          <Link href="/register">
-            <Button className="bg-emerald-500 hover:bg-emerald-400 text-white">
-              Get Started Today
-            </Button>
-          </Link>
+          <div className="flex gap-3">
+            <Link href="/register">
+              <Button className="bg-emerald-500 hover:bg-emerald-400 text-white">
+                Get Started Today
+              </Button>
+            </Link>
+            <Link href="/account/manage">
+              <Button variant="outline">
+                Manage Your Data
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -684,7 +670,7 @@ export default function PrivacyPage() {
         <div className="mx-auto max-w-6xl px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-gray-600">
-              &copy; 2025 Plantrip&apos;r AI. Your privacy matters to us.
+                        <p>&copy; 2025 Plantrip&apos;r. Your privacy matters to us.</p>
             </p>
             <div className="flex items-center gap-4">
               <CookieSettingsButton />

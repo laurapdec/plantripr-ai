@@ -136,9 +136,11 @@ export default function DashboardPage() {
             <Button size="icon" variant="ghost">
               <Bell className="h-4 w-4" />
             </Button>
-            <Button size="icon" variant="ghost">
-              <Settings className="h-4 w-4" />
-            </Button>
+            <Link href="/settings">
+              <Button size="icon" variant="ghost">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </Link>
             <Avatar>
               <AvatarImage src="https://i.pravatar.cc/32?img=1" />
               <AvatarFallback>LR</AvatarFallback>
