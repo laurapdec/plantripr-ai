@@ -138,7 +138,7 @@ export default function ManageAccountPage() {
       {/* Header */}
       <header className="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/80 bg-white/90 border-b border-gray-200">
         <div className="mx-auto max-w-6xl flex items-center justify-between px-4 py-3">
-          <Link href="/dashboard" className="flex items-center gap-3">
+          <Link href="/my-trips" className="flex items-center gap-3">
             <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-500">
               <Plane className="h-4 w-4 text-white" />
             </span>
@@ -148,15 +148,15 @@ export default function ManageAccountPage() {
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/dashboard" className="text-gray-600 hover:text-gray-900">Dashboard</Link>
+            <Link href="/my-trips" className="text-gray-600 hover:text-gray-900">My Trips</Link>
             <Link href="/account/manage" className="text-gray-900 font-medium">Account</Link>
             <Link href="/settings" className="text-gray-600 hover:text-gray-900">Settings</Link>
             <Link href="/contact" className="text-gray-600 hover:text-gray-900">Support</Link>
           </nav>
 
           <div className="flex items-center gap-3">
-            <Link href="/dashboard">
-              <Button variant="ghost">Back to Dashboard</Button>
+            <Link href="/my-trips">
+              <Button variant="ghost">Back to My Trips</Button>
             </Link>
           </div>
         </div>

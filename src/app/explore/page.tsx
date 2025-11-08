@@ -132,18 +132,33 @@ export default function ExplorePage() {
       {/* Header */}
       <header className="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/80 bg-white/90 border-b border-gray-200">
         <div className="mx-auto max-w-6xl flex items-center justify-between px-4 py-3">
-          <Link href="/dashboard" className="flex items-center gap-3">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-500">
-              <Plane className="h-4 w-4 text-white" />
-            </span>
-            <div className="font-semibold tracking-tight text-xl">
-              Plantrip'r <span className="text-emerald-500">AI</span>
-            </div>
-          </Link>
+          <div className="flex items-center gap-6">
+            <Link href="/" className="flex items-center gap-3">
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-500">
+                <Plane className="h-4 w-4 text-white" />
+              </span>
+              <div className="font-semibold tracking-tight text-xl">
+                Plantrip'r <span className="text-emerald-500">AI</span>
+              </div>
+            </Link>
+            
+            <nav className="hidden md:flex items-center gap-6">
+              <Link href="/" className="text-gray-900 font-medium">Explore</Link>
+              <Link href="/my-trips" className="text-gray-600 hover:text-gray-900">My Trips</Link>
+            </nav>
+          </div>
 
           <div className="flex items-center gap-3">
-            <Link href="/dashboard">
-              <Button variant="ghost">Back to Dashboard</Button>
+            <Link href="/my-trips">
+              <Button variant="outline" className="hidden sm:flex">
+                <Compass className="mr-2 h-4 w-4" />
+                My Trips
+              </Button>
+            </Link>
+            <Link href="/my-trips">
+              <Button variant="outline" className="sm:hidden">
+                <Compass className="h-4 w-4" />
+              </Button>
             </Link>
           </div>
         </div>

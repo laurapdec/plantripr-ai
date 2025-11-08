@@ -30,8 +30,8 @@ export default function LoginPage() {
     setTimeout(() => {
       console.log("Logging in:", { email, password });
       setIsLoading(false);
-      // Redirect to dashboard
-      window.location.href = "/dashboard";
+      // Redirect to explore (home page)
+      window.location.href = "/explore";
     }, 1500);
   };
 

@@ -21,6 +21,7 @@ import {
   Plane,
   CalendarDays,
   Download,
+  ExternalLink,
   FileText,
   Heart,
   History,
@@ -287,6 +288,7 @@ export default function TripDetailPage() {
   const [currentCurrency, setCurrentCurrency] = useState<Currency>("USD");
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
   const [showQrCode, setShowQrCode] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<Array<{id: string; name: string; size: number; uploadDate: string; url?: string}>>([]);
 
   const split = useExpenseSplit(activeTrip.expenses, activeTrip.guests, currentCurrency);
 
@@ -393,6 +395,50 @@ export default function TripDetailPage() {
     setActiveTrip({ ...activeTrip, guests: [...activeTrip.guests, g] });
     setNewGuest({ name: "", email: "" });
   }
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files) return;
+
+    Array.from(files).forEach(file => {
+      // Validate file type (PDFs only)
+      if (file.type !== 'application/pdf') {
+        alert(`${file.name} is not a PDF file. Please upload PDF files only.`);
+        return;
+      }
+
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        alert(`${file.name} is too large. Please upload files smaller than 10MB.`);
+        return;
+      }
+
+      const newFile = {
+        id: Math.random().toString(36).slice(2, 8),
+        name: file.name,
+        size: file.size,
+        uploadDate: new Date().toLocaleDateString(),
+        url: URL.createObjectURL(file) // In a real app, this would be a server URL
+      };
+
+      setUploadedFiles(prev => [...prev, newFile]);
+    });
+
+    // Reset input
+    event.target.value = '';
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const removeFile = (fileId: string) => {
+    setUploadedFiles(prev => prev.filter(f => f.id !== fileId));
+  };
 
   const shareUrl = `https://plantripr.app/trip/${activeTrip.id}?code=${activeTrip.tripCode}`;
 
@@ -1037,15 +1083,80 @@ export default function TripDetailPage() {
             </Card>
 
             <Card>
-              <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2"><FileText className="h-5 w-5"/>Notes & Docs</CardTitle></CardHeader>
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="h-5 w-5"/>
+                  Notes & Docs
+                </CardTitle>
+              </CardHeader>
               <CardContent className="space-y-3">
-                <div className="text-sm text-gray-600">Attach confirmations, packing lists, PDFs and share with the group.</div>
-                <div className="grid grid-cols-2 gap-2">
-                  <Button variant="outline"><Plus className="mr-2 h-4 w-4"/>Upload PDF</Button>
-                  <Button variant="outline"><Plus className="mr-2 h-4 w-4"/>Packing list</Button>
+                <div className="text-sm text-gray-600">
+                  Upload confirmations, tickets, and important documents to share with the group.
                 </div>
-                <Progress value={38} className="h-2"/>
-                <div className="text-xs text-gray-600">38% of pre-trip checklist done</div>
+                
+                <div className="space-y-2">
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    multiple
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    id="pdf-upload"
+                  />
+                  <Button 
+                    variant="outline" 
+                    onClick={() => document.getElementById('pdf-upload')?.click()}
+                    className="w-full"
+                  >
+                    <Plus className="mr-2 h-4 w-4"/>
+                    Upload PDF
+                  </Button>
+                </div>
+
+                {/* Uploaded Files List */}
+                {uploadedFiles.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="text-sm font-medium text-gray-700">Uploaded Documents</div>
+                    {uploadedFiles.map((file) => (
+                      <div key={file.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg border">
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-red-500" />
+                          <div className="flex-1">
+                            <div className="text-sm font-medium">{file.name}</div>
+                            <div className="text-xs text-gray-500">
+                              {formatFileSize(file.size)} • {file.uploadDate}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          {file.url && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => window.open(file.url, '_blank')}
+                              className="h-8 w-8 p-0"
+                            >
+                              <ExternalLink className="h-3 w-3" />
+                            </Button>
+                          )}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeFile(file.id)}
+                            className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+                          >
+                            ×
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <Progress value={uploadedFiles.length > 0 ? 65 : 38} className="h-2"/>
+                <div className="text-xs text-gray-600">
+                  {uploadedFiles.length > 0 ? '65' : '38'}% of pre-trip checklist done
+                </div>
               </CardContent>
             </Card>
           </div>
