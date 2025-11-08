@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
 import { 
   Plane,
   Sparkles,
@@ -28,6 +29,8 @@ import {
   Clock,
   Bell,
   Settings,
+  LogOut,
+  User,
 } from "lucide-react";
 
 const tripTypes = [
@@ -135,6 +138,17 @@ export default function ExplorePage() {
     alert("Notifications feature coming soon!");
   };
 
+  const handleLogout = () => {
+    // TODO: Implement logout functionality
+    console.log("Logging out...");
+    // Clear user session and redirect to login
+    window.location.href = "/login";
+  };
+
+  const handleManageAccount = () => {
+    window.location.href = "/account/manage";
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -157,18 +171,75 @@ export default function ExplorePage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <Button size="icon" variant="ghost" onClick={handleNotifications}>
-              <Bell className="h-4 w-4" />
-            </Button>
-            <Link href="/settings">
-              <Button size="icon" variant="ghost">
-                <Settings className="h-4 w-4" />
-              </Button>
-            </Link>
-            <Avatar>
-              <AvatarImage src="https://i.pravatar.cc/32?img=1" />
-              <AvatarFallback>LR</AvatarFallback>
-            </Avatar>
+            {/* Notifications Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="icon" variant="ghost">
+                  <Bell className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-80">
+                <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium">Trip reminder</p>
+                    <p className="text-xs text-gray-500">Your Andes trip starts in 3 days</p>
+                    <p className="text-xs text-gray-400">2 hours ago</p>
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium">New activity suggestion</p>
+                    <p className="text-xs text-gray-500">AI found 3 new activities for Japan trip</p>
+                    <p className="text-xs text-gray-400">5 hours ago</p>
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium">Expense split update</p>
+                    <p className="text-xs text-gray-500">David paid $240 for hotel booking</p>
+                    <p className="text-xs text-gray-400">1 day ago</p>
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-center">
+                  <span className="text-sm text-emerald-600">View all notifications</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
+            {/* User Avatar Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Avatar className="cursor-pointer hover:ring-2 hover:ring-emerald-200 transition-all">
+                  <AvatarImage src="https://i.pravatar.cc/32?img=1" />
+                  <AvatarFallback>LR</AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium">Laura Rodriguez</p>
+                    <p className="text-xs text-gray-500">laura@example.com</p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleManageAccount}>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Manage Account</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Settings</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>
