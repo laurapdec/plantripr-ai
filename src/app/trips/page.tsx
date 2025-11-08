@@ -111,6 +111,11 @@ export default function TripsPage() {
     }
   };
 
+  const handleNotifications = () => {
+    // TODO: Implement notifications functionality
+    alert("Notifications feature coming soon!");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -133,7 +138,7 @@ export default function TripsPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <Button size="icon" variant="ghost">
+            <Button size="icon" variant="ghost" onClick={handleNotifications}>
               <Bell className="h-4 w-4" />
             </Button>
             <Link href="/settings">
@@ -367,6 +372,56 @@ export default function TripsPage() {
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white mt-16">
+        <div className="mx-auto max-w-7xl px-4 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-2xl bg-emerald-500">
+                  <Plane className="h-4 w-4 text-white" />
+                </span>
+                <div className="font-semibold text-lg">
+                  Plantrip'r <span className="text-emerald-400">AI</span>
+                </div>
+              </div>
+              <p className="text-gray-400 text-sm">
+                Plan smarter trips with AI-powered recommendations and collaborative tools.
+              </p>
+            </div>
+            
+            <div>
+              <h3 className="font-medium mb-4">Product</h3>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link href="/explore" className="hover:text-white">Explore</Link></li>
+                <li><Link href="/trips" className="hover:text-white">My Trips</Link></li>
+                <li><Link href="/settings" className="hover:text-white">Settings</Link></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h3 className="font-medium mb-4">Support</h3>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link href="/contact" className="hover:text-white">Contact</Link></li>
+                <li><Link href="/about" className="hover:text-white">About</Link></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h3 className="font-medium mb-4">Legal</h3>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link href="/privacy" className="hover:text-white">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="hover:text-white">Terms of Service</Link></li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+            <p>&copy; 2025 Plantrip'r AI. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   Plane,
   Sparkles,
@@ -25,6 +26,8 @@ import {
   TreePine,
   Star,
   Clock,
+  Bell,
+  Settings,
 } from "lucide-react";
 
 const tripTypes = [
@@ -127,13 +130,18 @@ export default function ExplorePage() {
     window.location.href = `/trips/new?destination=${destination.id}`;
   };
 
+  const handleNotifications = () => {
+    // TODO: Implement notifications functionality
+    alert("Notifications feature coming soon!");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/80 bg-white/90 border-b border-gray-200">
         <div className="mx-auto max-w-6xl flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center gap-3">
+            <Link href="/explore" className="flex items-center gap-3">
               <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-500">
                 <Plane className="h-4 w-4 text-white" />
               </span>
@@ -143,23 +151,24 @@ export default function ExplorePage() {
             </Link>
             
             <nav className="hidden md:flex items-center gap-6">
-              <Link href="/" className="text-gray-900 font-medium">Explore</Link>
+              <Link href="/explore" className="text-gray-900 font-medium">Explore</Link>
               <Link href="/trips" className="text-gray-600 hover:text-gray-900">Trips</Link>
             </nav>
           </div>
 
           <div className="flex items-center gap-3">
-            <Link href="/trips">
-              <Button variant="outline" className="hidden sm:flex">
-                <Compass className="mr-2 h-4 w-4" />
-                Trips
+            <Button size="icon" variant="ghost" onClick={handleNotifications}>
+              <Bell className="h-4 w-4" />
+            </Button>
+            <Link href="/settings">
+              <Button size="icon" variant="ghost">
+                <Settings className="h-4 w-4" />
               </Button>
             </Link>
-            <Link href="/trips">
-              <Button variant="outline" className="sm:hidden">
-                <Compass className="h-4 w-4" />
-              </Button>
-            </Link>
+            <Avatar>
+              <AvatarImage src="https://i.pravatar.cc/32?img=1" />
+              <AvatarFallback>LR</AvatarFallback>
+            </Avatar>
           </div>
         </div>
       </header>
@@ -391,6 +400,56 @@ export default function ExplorePage() {
           </div>
         )}
       </div>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white mt-16">
+        <div className="mx-auto max-w-7xl px-4 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-2xl bg-emerald-500">
+                  <Plane className="h-4 w-4 text-white" />
+                </span>
+                <div className="font-semibold text-lg">
+                  Plantrip'r <span className="text-emerald-400">AI</span>
+                </div>
+              </div>
+              <p className="text-gray-400 text-sm">
+                Plan smarter trips with AI-powered recommendations and collaborative tools.
+              </p>
+            </div>
+            
+            <div>
+              <h3 className="font-medium mb-4">Product</h3>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link href="/explore" className="hover:text-white">Explore</Link></li>
+                <li><Link href="/trips" className="hover:text-white">My Trips</Link></li>
+                <li><Link href="/settings" className="hover:text-white">Settings</Link></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h3 className="font-medium mb-4">Support</h3>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link href="/contact" className="hover:text-white">Contact</Link></li>
+                <li><Link href="/about" className="hover:text-white">About</Link></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h3 className="font-medium mb-4">Legal</h3>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link href="/privacy" className="hover:text-white">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="hover:text-white">Terms of Service</Link></li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+            <p>&copy; 2025 Plantrip'r AI. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
