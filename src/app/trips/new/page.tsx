@@ -35,40 +35,6 @@ import {
   Loader2,
 } from "lucide-react";
 
-// Mock API data for destinations with price estimates
-const destinationData = {
-  japan: {
-    name: "Japan",
-    cities: ["Tokyo", "Kyoto", "Osaka"],
-    image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=400&auto=format&fit=crop",
-    priceEstimates: {
-      budget: { min: 1200, max: 1800, description: "Hostels, local food, public transport" },
-      mid: { min: 2500, max: 3500, description: "Mid-range hotels, mix of local/tourist spots" },
-      luxury: { min: 5000, max: 8000, description: "Luxury hotels, fine dining, private tours" }
-    }
-  },
-  patagonia: {
-    name: "Patagonia, Argentina",
-    cities: ["El Calafate", "El Chalten", "Bariloche"],
-    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=400&auto=format&fit=crop",
-    priceEstimates: {
-      budget: { min: 800, max: 1200, description: "Camping, local food, bus travel" },
-      mid: { min: 1800, max: 2800, description: "Mid-range lodges, guided tours" },
-      luxury: { min: 4000, max: 6500, description: "Luxury lodges, private guides, helicopter tours" }
-    }
-  },
-  thailand: {
-    name: "Thailand",
-    cities: ["Bangkok", "Chiang Mai", "Phuket"],
-    image: "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=400&auto=format&fit=crop",
-    priceEstimates: {
-      budget: { min: 600, max: 1000, description: "Hostels, street food, local transport" },
-      mid: { min: 1400, max: 2200, description: "Mid-range hotels, mix of experiences" },
-      luxury: { min: 3500, max: 5500, description: "Luxury resorts, spa treatments, private tours" }
-    }
-  }
-};
-
 export default function NewTripPage() {
   const [destination, setDestination] = useState<string>("");
   const [departureLocation, setDepartureLocation] = useState<string>("");
@@ -220,6 +186,7 @@ export default function NewTripPage() {
             <nav className="hidden md:flex items-center gap-6">
               <Link href="/explore" className="text-gray-600 hover:text-gray-900">Explore</Link>
               <Link href="/trips" className="text-gray-900 font-medium">Trips</Link>
+              <Link href="/api-demo" className="text-gray-600 hover:text-gray-900">API Demo</Link>
             </nav>
           </div>
 
@@ -574,11 +541,89 @@ export default function NewTripPage() {
                 </Button>
               </CardContent>
             </Card>
+            )}
+
+            {/* Hotels Tab */}
+            {activeTab === 'hotels' && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Available Hotels</CardTitle>
+                  <p className="text-sm text-gray-600">
+                    {hotelData ? `Found ${hotelData.hotels.length} hotels` : 'Loading hotels...'}
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  {hotelsLoading && (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="h-6 w-6 animate-spin" />
+                      <span className="ml-2">Loading hotels...</span>
+                    </div>
+                  )}
+                  
+                  {hotelData && !hotelsLoading && (
+                    <div className="grid gap-4">
+                      {hotelData.hotels.slice(0, 6).map((hotel) => (
+                        <HotelCard
+                          key={hotel.id}
+                          hotel={hotel}
+                          onSelect={(hotel) => console.log('Selected hotel:', hotel)}
+                        />
+                      ))}
+                    </div>
+                  )}
+                  
+                  {!hotelData && !hotelsLoading && destination && (
+                    <div className="text-center py-8 text-gray-500">
+                      Please select dates to view available hotels
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Activities Tab */}
+            {activeTab === 'activities' && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Available Activities</CardTitle>
+                  <p className="text-sm text-gray-600">
+                    {activityData ? `Found ${activityData.activities.length} activities` : 'Loading activities...'}
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  {activitiesLoading && (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="h-6 w-6 animate-spin" />
+                      <span className="ml-2">Loading activities...</span>
+                    </div>
+                  )}
+                  
+                  {activityData && !activitiesLoading && (
+                    <div className="grid gap-4">
+                      {activityData.activities.slice(0, 6).map((activity) => (
+                        <ActivityCard
+                          key={activity.id}
+                          activity={activity}
+                          onSelect={(activity) => console.log('Selected activity:', activity)}
+                          onViewDetails={(activity) => console.log('View details:', activity)}
+                        />
+                      ))}
+                    </div>
+                  )}
+                  
+                  {!activityData && !activitiesLoading && (
+                    <div className="text-center py-8 text-gray-500">
+                      Loading activities for {destination}...
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {/* Price Estimates Sidebar */}
           <div>
-            {showPriceEstimates && currentDestination && (
+            {showPriceEstimates && priceEstimates && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -586,16 +631,19 @@ export default function NewTripPage() {
                     Price Estimates
                   </CardTitle>
                   <p className="text-sm text-gray-600">
-                    Estimated costs per person for {flexibleDuration || '7'} days
+                    Estimated costs per person for {flexibleDuration || calculateNights()} days
                     {isFlexibleDates && (
                       <Badge variant="secondary" className="ml-2 bg-green-100 text-green-700">
                         Save 15-40% with flexible dates
                       </Badge>
                     )}
+                    {priceLoading && (
+                      <Loader2 className="h-4 w-4 animate-spin ml-2" />
+                    )}
                   </p>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {Object.entries(currentDestination.priceEstimates).map(([type, estimate]) => {
+                  {Object.entries(priceEstimates).map(([type, estimate]) => {
                     // Calculate flexible date savings (15-30% discount)
                     const flexSavings = isFlexibleDates ? 0.75 : 1; // 25% average savings
                     const adjustedMin = Math.round(estimate.min * flexSavings);
@@ -656,7 +704,7 @@ export default function NewTripPage() {
                 <div className="space-y-3 text-sm text-gray-600">
                   <div className="flex items-start gap-2">
                     <Clock className="h-4 w-4 text-emerald-500 mt-0.5" />
-                    <p>Best time to visit {currentDestination?.name || "your destination"} is during shoulder season for better prices</p>
+                    <p>Best time to visit {destination || "your destination"} is during shoulder season for better prices</p>
                   </div>
                   <div className="flex items-start gap-2">
                     <Star className="h-4 w-4 text-emerald-500 mt-0.5" />

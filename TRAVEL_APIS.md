@@ -27,14 +27,95 @@
 - **Uber API**: Ride pricing estimates
 - **Car rental APIs**: Hertz, Avis, Enterprise APIs
 
-## Current Implementation
+## Current Implementation ✅
 
-The current implementation uses mock data for price estimates. To integrate real APIs:
+The application now includes **full API integration** for both Booking.com and GetYourGuide:
 
-1. **Environment Variables**: Set up API keys in `.env.local`
-2. **API Service Layer**: Create services in `src/lib/api/`
-3. **Real-time Updates**: Implement caching and rate limiting
-4. **Error Handling**: Graceful fallbacks when APIs are unavailable
+### ✅ **Implemented APIs**
+
+1. **Booking.com API** (`src/lib/api/booking.ts`)
+   - Hotel search by destination, dates, and guests
+   - Hotel details with photos, amenities, and ratings
+   - Price comparison and cancellation policies
+   - React Query hooks for caching and background updates
+
+2. **GetYourGuide API** (`src/lib/api/getyourguide.ts`)
+   - Activity search with filtering by category, price, and duration
+   - Activity details with highlights and booking options
+   - Support for skip-the-line, instant confirmation, and mobile tickets
+   - Infinite scroll and advanced search capabilities
+
+### 🔧 **Setup Instructions**
+
+1. **Environment Variables**: Add API keys to `.env.local`:
+   ```bash
+   BOOKING_API_KEY=your_booking_api_key_here
+   GETYOURGUIDE_API_KEY=your_getyourguide_api_key_here
+   ```
+
+2. **React Query Integration**: Automatic caching and error handling
+   ```tsx
+   import { useHotelSearch, useActivitySearch } from '@/hooks';
+   ```
+
+3. **UI Components**: Ready-to-use components
+   ```tsx
+   import { HotelCard, ActivityCard } from '@/components';
+   ```
+
+4. **Live Demo**: Test at `/api-demo` with interactive search
+
+### 📁 **File Structure**
+
+```
+src/
+├── lib/api/
+│   ├── base.ts              # Common API client
+│   ├── booking.ts           # Booking.com integration
+│   ├── getyourguide.ts      # GetYourGuide integration
+│   └── index.ts             # Combined API service
+├── hooks/
+│   ├── useBooking.ts        # Hotel search hooks
+│   ├── useGetYourGuide.ts   # Activity search hooks
+│   └── useTravelApi.ts      # Combined trip data hooks
+├── components/
+│   ├── HotelCard.tsx        # Hotel display component
+│   └── ActivityCard.tsx     # Activity display component
+└── app/
+    ├── api-demo/            # Live API testing page
+    └── trips/new/           # Updated trip creation with APIs
+```
+
+### 🎯 **Features**
+
+- **Real-time data** from live APIs with mock fallbacks
+- **Smart caching** using React Query (5-10 minute cache)
+- **Error handling** with graceful degradation
+- **Rate limiting** protection (60 req/min Booking, 100 req/min GetYourGuide)
+- **Currency support** for international travelers
+- **Mobile responsive** cards and interfaces
+- **Accessibility** features built-in
+
+### 🚀 **Usage Example**
+
+```tsx
+// Hotel search with caching
+const { data: hotels, isLoading } = useHotelSearch({
+  destination: 'Tokyo',
+  checkIn: '2025-12-01',
+  checkOut: '2025-12-07',
+  adults: 2,
+  currency: 'USD'
+});
+
+// Activity search with filters
+const { data: activities } = useActivitySearch({
+  destination: 'Tokyo',
+  category: ['Walking Tours', 'Museums'],
+  minRating: 4.5,
+  maxPrice: 100
+});
+```
 
 ## Mock Data Structure
 

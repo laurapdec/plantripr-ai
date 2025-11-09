@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { CookieConsent } from "@/components/ui/cookie-consent";
+import { QueryProvider } from "@/providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -50,8 +51,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
-        <CookieConsent />
+        <QueryProvider>
+          {children}
+          <CookieConsent />
+        </QueryProvider>
       </body>
     </html>
   );

@@ -2,17 +2,20 @@
 export * from './base';
 export * from './booking';
 export * from './getyourguide';
+export * from './uber';
 
 import { bookingApi } from './booking';
 import { getYourGuideApi } from './getyourguide';
+import { uberApi } from './uber';
 
 // Combined travel API service
 export class TravelApiService {
   booking = bookingApi;
   activities = getYourGuideApi;
+  transportation = uberApi;
 
   /**
-   * Get comprehensive trip data including hotels and activities
+   * Get comprehensive trip data including hotels, activities, and transportation
    */
   async getTripData(params: {
     destination: string;
@@ -20,8 +23,10 @@ export class TravelApiService {
     checkOut?: string;
     travelers?: number;
     currency?: string;
+    pickup?: { lat: number; lng: number; address?: string };
+    dropoff?: { lat: number; lng: number; address?: string };
   }) {
-    const [hotels, activities] = await Promise.allSettled([
+    const [hotels, activities, transportation] = await Promise.allSettled([
       this.booking.searchHotels({
         destination: params.destination,
         checkIn: params.checkIn || '',
@@ -36,14 +41,31 @@ export class TravelApiService {
         travelers: params.travelers,
         currency: params.currency,
       }),
+      // Only get transportation if coordinates provided
+      ...(params.pickup && params.dropoff ? [
+        this.transportation.getRideEstimates({
+          pickup: {
+            latitude: params.pickup.lat,
+            longitude: params.pickup.lng,
+            address: params.pickup.address,
+          },
+          destination: {
+            latitude: params.dropoff.lat,
+            longitude: params.dropoff.lng,
+            address: params.dropoff.address,
+          },
+        })
+      ] : [])
     ]);
 
     return {
       hotels: hotels.status === 'fulfilled' ? hotels.value : null,
       activities: activities.status === 'fulfilled' ? activities.value : null,
+      transportation: transportation?.status === 'fulfilled' ? transportation.value : null,
       errors: [
         ...(hotels.status === 'rejected' ? [hotels.reason] : []),
         ...(activities.status === 'rejected' ? [activities.reason] : []),
+        ...(transportation?.status === 'rejected' ? [transportation.reason] : []),
       ],
     };
   }
@@ -66,14 +88,14 @@ export class TravelApiService {
       }
 
       // Calculate hotel price ranges per night
-      const hotelPrices = hotels.map(h => h.pricePerNight.min);
+      const hotelPrices = hotels.map((h: any) => h.pricePerNight.min);
       const minHotelPrice = Math.min(...hotelPrices) * nights;
       const maxHotelPrice = Math.max(...hotelPrices) * nights;
 
       // Calculate activity price ranges (assume 3-5 activities)
-      const activityPrices = activities.map(a => a.price.min);
-      const minActivityPrice = activityPrices.slice(0, 3).reduce((sum, price) => sum + price, 0);
-      const maxActivityPrice = activityPrices.slice(0, 5).reduce((sum, price) => sum + price, 0);
+      const activityPrices = activities.map((a: any) => a.price.min);
+      const minActivityPrice = activityPrices.slice(0, 3).reduce((sum: number, price: number) => sum + price, 0);
+      const maxActivityPrice = activityPrices.slice(0, 5).reduce((sum: number, price: number) => sum + price, 0);
 
       return {
         budget: {

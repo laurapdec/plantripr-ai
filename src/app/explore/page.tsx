@@ -167,6 +167,7 @@ export default function ExplorePage() {
             <nav className="hidden md:flex items-center gap-6">
               <Link href="/explore" className="text-gray-900 font-medium">Explore</Link>
               <Link href="/trips" className="text-gray-600 hover:text-gray-900">Trips</Link>
+              <Link href="/api-demo" className="text-gray-600 hover:text-gray-900">API Demo</Link>
             </nav>
           </div>
 

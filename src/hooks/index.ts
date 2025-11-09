@@ -2,3 +2,4 @@
 export * from './useBooking';
 export * from './useGetYourGuide';
 export * from './useTravelApi';
+export * from './useUber';
